@@ -44,13 +44,25 @@ func (mng *Manager) NodeList() ([]swarm.Node, error) {
 }
 
 func (mng *Manager) ServiceCreate() (types.ServiceCreateResponse, error) {
+	endpointSpec := swarm.EndpointSpec{
+		Mode: "vip",
+		Ports: []swarm.PortConfig{
+			{
+				PublishedPort: 8080,
+			},
+		},
+	}
 	serviceSpec := swarm.ServiceSpec{
 		Annotations: swarm.Annotations{Name: fmt.Sprintf("service-%v", numService)},
 		TaskTemplate: swarm.TaskSpec{
 			ContainerSpec: swarm.ContainerSpec{
 				Image: "nginx:latest",
 			},
+			Networks: []swarm.NetworkAttachmentConfig{{
+				Target: "fun-swarm",
+			}},
 		},
+		EndpointSpec: &endpointSpec,
 	}
 	createResponse, err := mng.managerClient.ServiceCreate(context.Background(), serviceSpec, types.ServiceCreateOptions{})
 	return createResponse, err

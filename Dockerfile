@@ -8,6 +8,9 @@ RUN mkdir -p $PROJECT_SRC
 COPY . $PROJECT_SRC
 RUN go get -u github.com/kardianos/govendor && cd $PROJECT_SRC && govendor install
 
+RUN mkdir -p /ca/manager
+VOLUME /ca/manager
+
 ENTRYPOINT /go/bin/fun-swarm-scheduler
 
 EXPOSE 8484

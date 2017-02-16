@@ -6,8 +6,7 @@ This repo is a POC around having a swarm service responsible for scheduling new 
 ## Setup
 
  * `setup.sh`: Create the docker-machine, the swarm and the overlay network.
- * `deploy.sh`: Deploy testing service
- * `deploy-scheduler.sh`: Deploy the scheduler
+ * `deploy.sh`: Deploy testing service and scheduler
  * `update-scheduler.sh`: Updates the scheduler running on swarm
 
 ## Usage

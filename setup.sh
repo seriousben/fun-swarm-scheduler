@@ -2,12 +2,16 @@
 
 set -e
 
+#
 # Env:
-#   DOCKER_SERVICE_PREFER_OFFLINE_IMAGE=1 let's the docker engine prefer local images over registry images
+#   DOCKER_SERVICE_PREFER_OFFLINE_IMAGE=1 let the docker engine prefer local images over registry images
+#
 
-docker-machine create -d virtualbox --engine-env DOCKER_SERVICE_PREFER_OFFLINE_IMAGE=1 node-1 &
+#docker-machine create -d virtualbox --engine-env DOCKER_SERVICE_PREFER_OFFLINE_IMAGE=1 node-1 &
+docker-machine create -d virtualbox node-1 &
 NODE1_PID=$!
-docker-machine create -d virtualbox --engine-env DOCKER_SERVICE_PREFER_OFFLINE_IMAGE=1 node-2 &
+#docker-machine create -d virtualbox --engine-env DOCKER_SERVICE_PREFER_OFFLINE_IMAGE=1 node-2 &
+docker-machine create -d virtualbox node-2 &
 NODE2_PID=$!
 
 wait $NODE1_PID
