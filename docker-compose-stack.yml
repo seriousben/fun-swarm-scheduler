@@ -1,0 +1,25 @@
+version: "3.0"
+
+services:
+  scheduler:
+    image: seriousben/fun-swarm-scheduler
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      labels:
+       - "traefik.backend=scheduler"
+       - "traefik.port=8484"
+       - "traefik.frontend.rule=PathPrefixStrip:/scheduler"
+      placement:
+        constraints: [node.role == manager]
+  proxy:
+    image: traefik
+    command: traefik --docker --docker.swarmmode --docker.domain=traefik --docker.watch --loglevel=DEBUG --web
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints: [node.role == manager]

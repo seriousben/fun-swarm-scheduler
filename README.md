@@ -21,6 +21,63 @@ This repo is a POC/Playground around having a swarm service responsible for sche
 
 With your Swarm running (`./setup.sh && ./deploy.sh`)
 
+### How can I proxy my Swarm Services?
+
+1. Run the stack file containing a Proxy implemented using traefik
+
+  ```console
+  $ docker stack deploy -c docker-compose-stack.yml fun-swarm-scheduler
+  ```
+
+  Notice the labels defined on the scheduler to expose it through the proxy:
+
+  ```yml
+  scheduler:
+    image: seriousben/fun-swarm-scheduler
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      labels:
+      - "traefik.backend=scheduler"
+      - "traefik.port=8484"
+      - "traefik.frontend.rule=PathPrefixStrip:/scheduler"
+      placement:
+        constraints: [node.role == manager]
+  ```
+
+2. Acccess the scheduler through the proxy
+
+  ```console
+  $ curl $(docker-machine ip node-1)/scheduler/health
+  ```
+
+3. Ask the scheduler to create new nginx services exposed through the proxy
+
+  ```console
+  # Create service-1
+  $ curl $(docker-machine ip node-1)/scheduler/create
+  # Create service-2
+  $ curl $(docker-machine ip node-1)/scheduler/create
+  # Create service-3
+  $ curl $(docker-machine ip node-1)/scheduler/create
+  # Create service-4
+  $ curl $(docker-machine ip node-1)/scheduler/create
+  # Create service-5
+  $ curl $(docker-machine ip node-1)/scheduler/create
+  ```
+
+  Which can be accessed through:
+
+  ```console
+  $ curl $(docker-machine ip node-1)/nginx
+  ```
+
+4. Traefik also exposed a Web UI
+
+  ```console
+  $ firefox http://$(docker-machine ip node-1):8080
+  ```
+
 ### Can I contact Swarm locally?
 
 1. Run the scheduler

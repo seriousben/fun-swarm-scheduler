@@ -44,22 +44,27 @@ func (mng *Manager) NodeList() ([]swarm.Node, error) {
 }
 
 func (mng *Manager) ServiceCreate() (types.ServiceCreateResponse, error) {
+	numService += 1
+
 	endpointSpec := swarm.EndpointSpec{
 		Mode: "vip",
-		Ports: []swarm.PortConfig{
-			{
-				PublishedPort: 8080,
+	}
+
+	serviceSpec := swarm.ServiceSpec{
+		Annotations: swarm.Annotations{
+			Name: fmt.Sprintf("service-%v", numService),
+			Labels: map[string]string{
+				"traefik.backend":       "nginx",
+				"traefik.port":          "80",
+				"traefik.frontend.rule": "PathPrefixStrip:/nginx",
 			},
 		},
-	}
-	serviceSpec := swarm.ServiceSpec{
-		Annotations: swarm.Annotations{Name: fmt.Sprintf("service-%v", numService)},
 		TaskTemplate: swarm.TaskSpec{
 			ContainerSpec: swarm.ContainerSpec{
 				Image: "nginx:latest",
 			},
 			Networks: []swarm.NetworkAttachmentConfig{{
-				Target: "fun-swarm",
+				Target: "fun-swarm-scheduler_default",
 			}},
 		},
 		EndpointSpec: &endpointSpec,
